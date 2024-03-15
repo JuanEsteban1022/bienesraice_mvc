@@ -1,4 +1,3 @@
-*inside .gitignore*
 .gitignore
 node_modules
 .env

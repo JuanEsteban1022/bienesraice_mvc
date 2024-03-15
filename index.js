@@ -1,13 +1,17 @@
 import express from 'express';
-import usuerioRoutes from "./routes/user.routing.js";
 import db from "./config/db.js";
+import usuerioRoutes from "./routes/user.routing.js";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
+
+/** habilitación de lectura de datos de formularios */
+app.use(express.urlencoded({ extended: true }));
 
 // Conexión a la DB
 try {
     await db.authenticate();
+    db.sync();
     console.log('Conexión correcta a la DB');
 } catch (error) {
     console.error(error);
