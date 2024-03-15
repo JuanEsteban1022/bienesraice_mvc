@@ -1,12 +1,22 @@
 import express from 'express';
+import csrf from "csurf";
+import cookieParser from "cookie-parser";
 import db from "./config/db.js";
 import usuerioRoutes from "./routes/user.routing.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-/** habilitación de lectura de datos de formularios */
+/**
+ * habilitación de lectura de datos de formularios
+ */
 app.use(express.urlencoded({ extended: true }));
+
+/** Habilitar cookie parser */
+app.use(cookieParser());
+
+/** Habilitar CSRF */
+app.use(csrf({ cookie: true }));
 
 // Conexión a la DB
 try {

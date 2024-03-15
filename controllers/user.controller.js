@@ -5,7 +5,12 @@ import Usuario from '../models/User.js'
 
 const formLogin = (req, res) => { res.render('auth/login', { page: 'Iniciar Sesión' }); };
 
-const formRegister = (req, res) => { res.render('auth/register', { page: 'Crear cuenta' }); };
+const formRegister = (req, res) => {
+    res.render('auth/register', {
+        page: 'Crear cuenta',
+        csrfToken: req.csrfToken()
+    });
+};
 
 const register = async (req, res) => {
     /** Validación */
