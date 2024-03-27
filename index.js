@@ -1,8 +1,9 @@
-import express from 'express';
-import csrf from "csurf";
 import cookieParser from "cookie-parser";
+import csrf from "csurf";
 import db from "./config/db.js";
+import express from 'express';
 import usuerioRoutes from "./routes/user.routing.js";
+import propiedadesRoutes from "./routes/properties.routing.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -34,9 +35,9 @@ app.set('views', './views');
 // Carpeta publica
 app.use(express.static('public'));
 
-
 // use busca las rutas que inician con /
 app.use('/auth', usuerioRoutes);
+app.use('/', propiedadesRoutes);
 
 
 // Definición de puerto y arranque del proyecto
