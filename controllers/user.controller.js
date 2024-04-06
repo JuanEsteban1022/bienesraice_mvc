@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 
 import { emailRegister, forgotpassword } from "../helpers/emails.js";
 import { generateId, generateJWT } from "../helpers/tokens.js";
-import Usuario from '../models/User.js'
+import Usuario from '../models/User.model.js'
 
 const formLogin = (req, res) => {
     res.render('auth/login', {
@@ -68,7 +68,7 @@ const authenticate = async (req, res) => {
         httpOnly: true,
         secure: true,
         sameSite: true
-    }).redirect('/mis-propiedades');
+    }).redirect('/my-properties');
 };
 
 const formRegister = (req, res) => {

@@ -5,6 +5,7 @@ html(lang="es")
         meta(name="viewport" content="width=device-width, initial-scale=1.0")
         title Bienes Raices | #{page}
         link(rel="stylesheet" href="/css/app.css")
+        block styles
     body(class="min-h-screen bg-gray-50")
         
         if bar
@@ -12,3 +13,5 @@ html(lang="es")
 
         main(class="mx-auto container mt-10 px-2")
             block contenido
+
+        block scripts
