@@ -1,8 +1,7 @@
-import categoria from './../models/Categoria.model.js';
 import categories from "./categories.seed.js";
 import db from '../config/db.js';
-import precio from './../models/Price.model.js';
 import price from "./price.seed.js";
+import {Categorie, Price} from "../models/index.model.js";
 
 const importarDatos = async () => {
     try {
@@ -14,8 +13,8 @@ const importarDatos = async () => {
 
         // Insertar datos
         await Promise.all([
-            await categoria.bulkCreate(categories),
-            await precio.bulkCreate(price),
+            await Categorie.bulkCreate(categories),
+            await Price.bulkCreate(price),
         ]);
         console.log('Datos importados correctamente');
         process.exit(0);
@@ -29,8 +28,8 @@ const importarDatos = async () => {
 const deleteData = async () => {
     try {
         // await Promise.all([
-        //     await categoria.truncate({ where: {}, truncate: true }),
-        //     await precio.truncate({ where: {}, truncate: true }),
+        //     await Categorie.truncate({ where: {}, truncate: true }),
+        //     await Price.truncate({ where: {}, truncate: true }),
         // ]);
         await db.sync({ force: true });
 
