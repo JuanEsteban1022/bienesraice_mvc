@@ -99,12 +99,52 @@ const addImage = async (req, res) => {
 
     res.render('properties/add-image', {
         page: `Agregar Imagen: ${propertie.title}`,
+        csrfToken: req.csrfToken(),
         propertie
     });
 }
+
+const storeImage = async (req, res, next) => {
+    
+    const { id } = req.params;
+    
+    // Valida que la propiedad exista
+    const propertie = await Propertie.findByPk(id);
+
+    if (!propertie) {
+        return res.redirect('/my-properties');
+    }
+
+
+    // Validad que la propiedad no se encuentre publicada
+    if (propertie.publicado) {
+        return res.redirect('/my-properties');
+    }
+
+    // Validad que la propiedad pertenezca al usuario logueado
+    if (req.user.id.toString() !== propertie.usuarioId.toString()) {
+        return res.redirect('/my-properties');
+    }
+    try {
+        
+        /** Almacenar la imagen y publicar propiedad */
+        propertie.imagen = req.file.filename;
+        propertie.publicado = 1;
+
+        await propertie.save();
+
+        // Permite que continue al siguiente middleware
+        next();
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export {
     admin,
     crear,
     guardar,
-    addImage
+    addImage,
+    storeImage
 }
