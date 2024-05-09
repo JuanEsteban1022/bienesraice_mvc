@@ -2,9 +2,25 @@ import { Categorie, Price, Propertie } from '../models/index.model.js'
 import { validationResult } from 'express-validator';
 
 
-const admin = (req, res) => {
+const admin = async (req, res) => {
+
+    const { id } = req.user;
+
+    console.log(req.user);
+
+    const properties = await Propertie.findAll({
+        where: {
+            usuarioId: id
+        },
+        include: [
+            {model: Categorie, as: 'categoria'},
+            {model: Price, as: 'precio'}
+        ]
+    });
+
     res.render('properties/admin', {
         page: 'Mis propiedades',
+        properties
     });
 }
 
@@ -105,9 +121,9 @@ const addImage = async (req, res) => {
 }
 
 const storeImage = async (req, res, next) => {
-    
+
     const { id } = req.params;
-    
+
     // Valida que la propiedad exista
     const propertie = await Propertie.findByPk(id);
 
@@ -126,7 +142,7 @@ const storeImage = async (req, res, next) => {
         return res.redirect('/my-properties');
     }
     try {
-        
+
         /** Almacenar la imagen y publicar propiedad */
         propertie.imagen = req.file.filename;
         propertie.publicado = 1;

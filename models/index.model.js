@@ -5,9 +5,9 @@ import User from './User.model.js';
 
 // Price.hasOne(Propertie);
 
-Propertie.belongsTo(Price);
-Propertie.belongsTo(Categorie);
-Propertie.belongsTo(User);
+Propertie.belongsTo(Price, {foreignKey: 'priceId', as: 'precio'});
+Propertie.belongsTo(Categorie, {foreignKey: 'categoryId', as: 'categoria'});
+Propertie.belongsTo(User, {foreignKey: 'usuarioId'});
 
 export {
     Categorie,
