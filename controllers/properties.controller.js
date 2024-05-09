@@ -1,25 +1,25 @@
 import { Categorie, Price, Propertie } from '../models/index.model.js'
 import { validationResult } from 'express-validator';
+import { unlink } from "node:fs/promises";
 
 
 const admin = async (req, res) => {
 
     const { id } = req.user;
 
-    console.log(req.user);
-
     const properties = await Propertie.findAll({
         where: {
             usuarioId: id
         },
         include: [
-            {model: Categorie, as: 'categoria'},
-            {model: Price, as: 'precio'}
+            { model: Categorie, as: 'categoria' },
+            { model: Price, as: 'precio' }
         ]
     });
 
     res.render('properties/admin', {
         page: 'Mis propiedades',
+        csrfToken: req.csrfToken(),
         properties
     });
 }
@@ -157,10 +157,153 @@ const storeImage = async (req, res, next) => {
     }
 }
 
+const editar = async (req, res) => {
+
+    const { id } = req.params;
+
+    // Validar que la propiedad exista
+    const propertie = await Propertie.findByPk(id);
+
+    if (!propertie) {
+        return res.redirect('/my-properties');
+    }
+
+    // Revisar que quien visita la URL es quien publico la propiedad
+    if (propertie.usuarioId.toString() !== req.user.id.toString()) {
+        return res.redirect('/my-properties');
+    }
+
+    // Consultar modelo de precios y categorias
+    const [categorias, precios] = await Promise.all([
+        Categorie.findAll(),
+        Price.findAll()
+    ]);
+
+    res.render('properties/edit', {
+        page: `Editar propiedad: ${propertie.title}`,
+        csrfToken: req.csrfToken(),
+        categorias,
+        precios,
+        datos: propertie
+    });
+}
+
+const guardarCambios = async (req, res) => {
+
+    // Validación
+    let resultado = validationResult(req);
+    if (!resultado.isEmpty()) {
+
+        // Consultar modelo de precios y categorias
+        const [categorias, precios] = await Promise.all([
+            Categorie.findAll(),
+            Price.findAll()
+        ]);
+
+        return res.render('properties/edit', {
+            page: 'Editar propiedad',
+            csrfToken: req.csrfToken(),
+            categorias,
+            precios,
+            errors: resultado.array(),
+            datos: req.body
+        });
+    }
+
+    const { id } = req.params;
+
+    // Validar que la propiedad exista
+    const propertie = await Propertie.findByPk(id);
+
+    if (!propertie) {
+        return res.redirect('/my-properties');
+    }
+
+    // Revisar que quien visita la URL es quien publico la propiedad
+    if (propertie.usuarioId.toString() !== req.user.id.toString()) {
+        return res.redirect('/my-properties');
+    }
+
+    // Reescribir objeto y actualizar
+    try {
+        const { titulo: title, descripcion: description, categoria: categoryId, precio: priceId, habitaciones, estacionamiento, banos, calle, lat, lng } = req.body;
+
+        propertie.set({
+            banos,
+            calle,
+            categoryId,
+            description,
+            estacionamiento,
+            habitaciones,
+            lat,
+            lng,
+            priceId,
+            title,
+        });
+
+        await propertie.save();
+        res.redirect('my-properties');
+
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+const deletePropertie = async (req, res) => {
+    const { id } = req.params;
+
+    // Validar que la propiedad exista
+    const propertie = await Propertie.findByPk(id);
+
+    if (!propertie) {
+        return res.redirect('/my-properties');
+    }
+
+    // Revisar que quien visita la URL es quien publico la propiedad
+    if (propertie.usuarioId.toString() !== req.user.id.toString()) {
+        return res.redirect('/my-properties');
+    }
+
+    // Eliminar imagen asociada
+    await unlink(`public/uploads/${propertie.imagen}`);
+
+    // Eliminar la propiedad
+    await propertie.destroy();
+    res.redirect('/my-properties');
+}
+
+/** Visualización de propiedad */
+const viewPropertie = async (req, res) => {
+
+    const { id } = req.params;
+
+    // Validar que la propiedad existe
+    const propertie = await Propertie.findByPk(id, {
+        include: [
+            { model: Categorie, as: 'categoria' },
+            { model: Price, as: 'precio' }
+        ]
+    });
+
+    if (!propertie) {
+        return res.redirect('/404');
+    }
+
+    res.render('properties/view-properties', {
+        propertie,
+        page: propertie.title,
+    });
+}
+
 export {
+    addImage,
     admin,
     crear,
+    deletePropertie,
+    editar,
     guardar,
-    addImage,
-    storeImage
+    guardarCambios,
+    storeImage,
+    viewPropertie,
 }
