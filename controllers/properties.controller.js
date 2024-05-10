@@ -5,23 +5,58 @@ import { unlink } from "node:fs/promises";
 
 const admin = async (req, res) => {
 
-    const { id } = req.user;
+    // Leer QueryString
 
-    const properties = await Propertie.findAll({
-        where: {
-            usuarioId: id
-        },
-        include: [
-            { model: Categorie, as: 'categoria' },
-            { model: Price, as: 'precio' }
-        ]
-    });
+    const { page: actualPage } = req.query;
 
-    res.render('properties/admin', {
-        page: 'Mis propiedades',
-        csrfToken: req.csrfToken(),
-        properties
-    });
+    /** Fabricación de expresión regular */
+    const expressionRegular = /^[1-9]$/;
+
+    /** Valida que la pagina actual cumpla con las condiciones de la expresión regular */
+    if (!expressionRegular.test(actualPage)) {
+        return res.redirect('/my-properties?page=1');
+    }
+
+    try {
+        const { id } = req.user;
+
+        // Limites y Offset para el paginador
+        const limit = 5;
+
+        const offset = ((actualPage * limit) - limit);
+
+        const [properties, total] = await Promise.all([
+            Propertie.findAll({
+                limit,
+                offset,
+                where: {
+                    usuarioId: id
+                },
+                include: [
+                    { model: Categorie, as: 'categoria' },
+                    { model: Price, as: 'precio' }
+                ]
+            }),
+            Propertie.count({
+                where: {
+                    usuarioId: id
+                }
+            }),
+        ]);
+
+        res.render('properties/admin', {
+            page: 'Mis propiedades',
+            csrfToken: req.csrfToken(),
+            properties,
+            pages: Math.ceil(total / limit),
+            actualPage: Number(actualPage),
+            total,
+            offset,
+            limit,
+        });
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 const crear = async (req, res) => {
