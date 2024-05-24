@@ -5,12 +5,12 @@ block styles
 
 block contenido 
     //- pre= JSON.stringify(propertie, undefined, 2)
-
+    a(href="/my-properties" class="rounded py-2 px-10 bg-blue-600 hover:bg-blue-700 text-sm font-bold text-center text-white uppercase inline-block w-full sm:w-auto shadow-md") Regresar
     div(class="py-5")
-        h1(id="titulo" class="text-4xl my-10 font-extrabold text-center")= propertie.title
+        h1(id="titulo" class="text-4xl my-6 font-extrabold text-center")= propertie.title
 
         div 
-            a(href="#" class="font-bold text-gray-600 text-sm") Categoria:
+            a(href="#" class="font-bold text-gray-600 text-sm") Categoria: 
                 span(class="font-normal")= propertie.categoria.name
 
         div(class="mt-5 md:flex md:gap-4")
@@ -37,7 +37,7 @@ block contenido
                     p(id="lng" class="hidden")= propertie.lng
 
                 div(class="p-5")
-                    p(class="text-gray-600 font-bold text-xs") Dirección
+                    p(class="text-gray-600 font-bold text-xs") Dirección: 
                         span(id="calle" class="text-gray-800 text-lg")= propertie.calle
 
 block scripts

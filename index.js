@@ -4,6 +4,8 @@ import db from "./config/db.js";
 import express from 'express';
 import usuerioRoutes from "./routes/user.routing.js";
 import propiedadesRoutes from "./routes/properties.routing.js";
+import appRoutes from "./routes/app-routes.routing.js";
+import apiRoutes from "./routes/api-routes.routing.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -36,8 +38,10 @@ app.set('views', './views');
 app.use(express.static('public'));
 
 // use busca las rutas que inician con /
+app.use('/', appRoutes);
 app.use('/auth', usuerioRoutes);
 app.use('/', propiedadesRoutes);
+app.use('/api', apiRoutes);
 
 
 // Definición de puerto y arranque del proyecto
