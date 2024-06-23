@@ -3,6 +3,7 @@ import { body } from 'express-validator';
 import { admin, crear, guardar, guardarCambios, addImage, storeImage, editar, deletePropertie, viewPropertie } from "../controllers/properties.controller.js";
 import protectRoute from "../middleware/protectedRoutes.middleware.js";
 import upload from "../middleware/uploadFile.js";
+import identificarUsuario from '../middleware/identificar_usuario.middleware.js'
 
 const router = express.Router();
 
@@ -40,6 +41,8 @@ router.post('/properties/edit/:id', protectRoute,
 router.post('/properties/delete/:id', protectRoute, deletePropertie);
 
 /** Area publica, no requiere cuenta */
-router.get('/properties/:id', viewPropertie);
+router.get('/properties/:id', 
+    identificarUsuario,
+    viewPropertie);
 
 export default router;

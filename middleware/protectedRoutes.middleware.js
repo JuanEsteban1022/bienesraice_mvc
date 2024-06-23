@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
 import Usuario from '../models/User.model.js'
 const protectRoute = async (req, res, next) => {
-    
-    // Verificar si existe un token
-    const {_token} = req.cookies;
 
-    if(!_token) {
+    // Verificar si existe un token
+    const { _token } = req.cookies;
+
+    if (!_token) {
         return res.redirect('/auth/login');
     }
 

@@ -4,8 +4,8 @@ const properties = async (req, res) => {
 
     const propertie = await Propertie.findAll({
         include: [
-            {model: Price, as: 'precio'},
-            {model: Categorie, as: 'categoria'},
+            { model: Price, as: 'precio' },
+            { model: Categorie, as: 'categoria' },
         ]
     });
 

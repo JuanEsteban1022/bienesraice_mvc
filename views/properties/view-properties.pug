@@ -13,7 +13,7 @@ block contenido
             a(href="#" class="font-bold text-gray-600 text-sm") Categoria: 
                 span(class="font-normal")= propertie.categoria.name
 
-        div(class="mt-5 md:flex md:gap-4")
+        div(class="mt-5 md:flex md:gap-4 md:items-start")
             div(class="md:w-2/3 bg-white shadow rounded-lg")
                 img(src=`/uploads/${propertie.imagen}`, alt=`imagen de la propiedad ${propertie.title}`)
 
@@ -29,7 +29,7 @@ block contenido
                             span(class="text-gray-800 block text-lg")= propertie.estacionamiento
                         p(class="text-gray-600 font-bold text-xs") Precios 
                             span(class="text-gray-800 block text-lg")= propertie.precio.name
-            div(class="md:w-1/3") 
+            aside(class="md:w-1/3 bg-white shadow rounded-lg") 
                 h3(class="text-center py-10 leading-6 text-2xl font-bold text-gray-900") Ubicación
 
                 div(class="h-96" id="mapa")
@@ -39,6 +39,23 @@ block contenido
                 div(class="p-5")
                     p(class="text-gray-600 font-bold text-xs") Dirección: 
                         span(id="calle" class="text-gray-800 text-lg")= propertie.calle
+
+                    if !isVendedor
+                        h3(class="text-2xl text-center my-10 font-extrabold text-gray-900") Vendedor
+                        if usuario
+                            form(method="POST") 
+                                input(type="hidden" name="_csrf" value= csrfToken)
+
+                                div(class="space-y-5")
+                                    label(for="mensaje") Mensaje
+                                    textarea(id="mensaje" name="mensaje" class="w-full py-2 border border-e-gray-300 rounded-lg  shadow placeholder-gray-400" placeholder="Contactanos")
+
+                                    input(type="submit" value="Enviar Mensaje" class="bg-indigo-600 text-white font-bold uppercase text-sm w-full p-2 cursor-pointer")
+                        else
+                            div(class="flex flex-col items-center justify-center gap-2")
+                                p(class="text-center") Si deseas contactar al vendedor 
+                                a(class="text-indigo-600" href="/auth/create") debes crear una cuenta
+
 
 block scripts
     script(src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js")

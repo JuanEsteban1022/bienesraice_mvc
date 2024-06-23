@@ -43,7 +43,7 @@
 
         // Limpiar markets previos
         markers.clearLayers();
-        
+
         properties.forEach(propertie => {
             // Agregar los pines
             const marker = new L.marker([propertie?.lat, propertie?.lng], {

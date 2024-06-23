@@ -1,4 +1,4 @@
-import  {Dropzone}  from 'dropzone';
+import { Dropzone } from 'dropzone';
 
 const token = document.querySelector('meta[name="csrf-token"]').content;
 
