@@ -1,6 +1,6 @@
 import express from "express";
 import { body } from 'express-validator';
-import { admin, crear, guardar, guardarCambios, addImage, storeImage, editar, deletePropertie, viewPropertie } from "../controllers/properties.controller.js";
+import { admin, crear, guardar, guardarCambios, addImage, storeImage, editar, deletePropertie, viewPropertie, enviarMensaje, verMensajes } from "../controllers/properties.controller.js";
 import protectRoute from "../middleware/protectedRoutes.middleware.js";
 import upload from "../middleware/uploadFile.js";
 import identificarUsuario from '../middleware/identificar_usuario.middleware.js'
@@ -41,8 +41,22 @@ router.post('/properties/edit/:id', protectRoute,
 router.post('/properties/delete/:id', protectRoute, deletePropertie);
 
 /** Area publica, no requiere cuenta */
-router.get('/properties/:id', 
+router.get('/properties/:id',
     identificarUsuario,
-    viewPropertie);
+    viewPropertie
+);
+
+/** Almacenar los mensajes */
+router.post('/properties/:id',
+    identificarUsuario,
+    body('message').isLength({ min: 10 }).withMessage('El mensaje no puede ir vacío o es muy corto'),
+    enviarMensaje
+);
+
+router.get('/mensajes/:id',
+    protectRoute,
+    verMensajes
+);
+
 
 export default router;

@@ -1,4 +1,4 @@
-import { Categorie, Price, Propertie } from '../models/index.model.js'
+import { Categorie, Price, Propertie, Message } from '../models/index.model.js'
 import { validationResult } from 'express-validator';
 import { unlink } from "node:fs/promises";
 import { isVendedor } from "../helpers/index.js";
@@ -22,7 +22,7 @@ const admin = async (req, res) => {
         const { id } = req.user;
 
         // Limites y Offset para el paginador
-        const limit = 5;
+        const limit = 20;
 
         const offset = ((actualPage * limit) - limit);
 
@@ -35,7 +35,8 @@ const admin = async (req, res) => {
                 },
                 include: [
                     { model: Categorie, as: 'categoria' },
-                    { model: Price, as: 'precio' }
+                    { model: Price, as: 'precio' },
+                    { model: Message, as: 'messages' }
                 ]
             }),
             Propertie.count({
@@ -314,8 +315,6 @@ const viewPropertie = async (req, res) => {
 
     const { id } = req.params;
 
-    console.log('request del usuario: ', req.user);
-
     // Validar que la propiedad existe
     const propertie = await Propertie.findByPk(id, {
         include: [
@@ -337,14 +336,71 @@ const viewPropertie = async (req, res) => {
     });
 }
 
+const enviarMensaje = async (req, res) => {
+    const { id } = req.params;
+
+    // Validar que la propiedad existe
+    const propertie = await Propertie.findByPk(id, {
+        include: [
+            { model: Categorie, as: 'categoria' },
+            { model: Price, as: 'precio' }
+        ]
+    });
+
+    if (!propertie) {
+        return res.redirect('/404');
+    }
+
+    /** Renderizar los errores */
+    let resultado = validationResult(req);
+    // console.log('request del validador: ', validationResult(req));
+    if (!resultado.isEmpty()) {
+        console.log('entro por aca');
+        return res.render('properties/view-properties', {
+            propertie,
+            page: propertie.title,
+            csrfToken: req.csrfToken(),
+            usuario: req.user,
+            isVendedor: isVendedor(req.user?.id, propertie.usuarioId),
+            errors: resultado.array()
+        });
+    }
+    const { message } = req.body;
+    const { id: propertieId } = req.params;
+    const { id: usuarioId } = req.user;
+
+    /** Almacenar mensaje */
+    await Message.create({
+        message,
+        propertieId,
+        usuarioId
+    });
+
+    res.render('properties/view-properties', {
+        propertie,
+        page: propertie.title,
+        csrfToken: req.csrfToken(),
+        usuario: req.user,
+        isVendedor: isVendedor(req.user?.id, propertie.usuarioId),
+        redirect: true
+    });
+}
+
+/** Leer mensajes recibidos */
+const verMensajes = async (req, res) => {
+
+}
+
 export {
     addImage,
     admin,
     crear,
     deletePropertie,
     editar,
+    enviarMensaje,
     guardar,
     guardarCambios,
     storeImage,
+    verMensajes,
     viewPropertie,
 }
