@@ -1,6 +1,8 @@
 import express from "express";
 import { body } from 'express-validator';
-import { admin, crear, guardar, guardarCambios, addImage, storeImage, editar, deletePropertie, viewPropertie, enviarMensaje, verMensajes } from "../controllers/properties.controller.js";
+import {
+    addImage, cambiarEstado, crear, deletePropertie, editar, enviarMensaje, guardar, guardarCambios, storeImage, verMensajes, viewPropertie, admin,
+} from "../controllers/properties.controller.js";
 import protectRoute from "../middleware/protectedRoutes.middleware.js";
 import upload from "../middleware/uploadFile.js";
 import identificarUsuario from '../middleware/identificar_usuario.middleware.js'
@@ -38,7 +40,11 @@ router.post('/properties/edit/:id', protectRoute,
     guardarCambios
 );
 
+/** Eliminación de propiedades */
 router.post('/properties/delete/:id', protectRoute, deletePropertie);
+
+/** Cambio de estado de la propiedad */
+router.put('/properties/:id', protectRoute, cambiarEstado);
 
 /** Area publica, no requiere cuenta */
 router.get('/properties/:id',
@@ -53,6 +59,7 @@ router.post('/properties/:id',
     enviarMensaje
 );
 
+/** Visualización de mensajes */
 router.get('/mensajes/:id',
     protectRoute,
     verMensajes

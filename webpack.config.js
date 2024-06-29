@@ -7,6 +7,7 @@ export default {
         addImage: './src/js/addImage.js',
         viewMapa: './src/js/view-mapa.js',
         mapaInicio: './src/js/mapaInicio.js',
+        cambiarEstado: './src/js/cambiarEstado.js',
     },
     output: {
         filename: '[name].js',

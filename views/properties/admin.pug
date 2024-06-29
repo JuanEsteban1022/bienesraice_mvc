@@ -1,5 +1,8 @@
 extends ../layouts/admin
 
+block styles
+    meta(name="csrf-token" content= csrfToken)
+
 block contenido
     div.py-5 
         h1.text-4xl.my-10.font-extrabold.text-center Bienes
@@ -32,9 +35,8 @@ block contenido
 
                                     a(href=`/mensajes/${propertie.id}` class="text-sm text-gray-600")= `${propertie.messages.length} Mensajes`
 
-                                div(class="sm:w-1/4 md:w-2/6 lg:flex-1 flex flex-col lg:flex-row gap-2") 
-                                    form(action="#")
-                                        input(type="submit" class=`cursor-pointer px-2 md:py-1 text-xs leading-5 font-semibold rounded w-full  ${propertie.publicado ? 'bg-green-100 text-green-800 shadow-md' : 'bg-yellow-100 text-yellow-800 shadow-md'}` value=`${propertie.publicado ? 'Publicado' : 'No publicado'}`)
+                                div(class="sm:w-1/4 md:w-2/6 lg:w-1/6 flex flex-col 2xl:flex-row gap-2") 
+                                    button(type="button" data-propiedad-id=`${propertie.id}` class=`cambiar-estado cursor-pointer px-2 md:py-1 text-xs leading-5 font-semibold rounded w-full  ${propertie.publicado ? 'bg-green-100 text-green-800 shadow-md' : 'bg-yellow-100 text-yellow-800 shadow-md'}`)= `${propertie.publicado ? 'Publicado' : 'No publicado'}` 
                                     a(href=`/properties/edit/${propertie.id}` class="cursor-pointer shadow-md px-2 md:py-1 text-xs leading-5 font-semibold rounded bg-blue-100 text-blue-800 text-center") Editar
 
                                     form(method="POST" action=`/properties/delete/${propertie.id}`)
@@ -58,3 +60,6 @@ block contenido
                                     a(class=`${actualPage == n ? 'bg-blue-50 border-blue-500 text-blue-600': 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'} relative inline-flex items-center px-4 py-2 border text-sm font-medium` href=`/my-properties?page=${n}`) #{n++}
         else 
             p.text-center No hay propiedades
+
+block scripts
+    script(src="/js/cambiarEstado.js")

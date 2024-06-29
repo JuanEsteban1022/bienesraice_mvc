@@ -1,13 +1,15 @@
 import express from "express";
 import {
     authenticate,
+    cerrarSesion,
     confirmAccount,
     formForgotPassword,
     formLogin,
     formRegister,
+    newPassword,
     register,
     resetPassword,
-    validToken, newPassword
+    validToken, 
 } from "../controllers/user.controller.js";
 
 const router = express.Router();
@@ -15,6 +17,9 @@ const router = express.Router();
 // Routing
 router.get('/login', formLogin);
 router.post('/login', authenticate);
+
+// Cerrar Sesión
+router.post('/cerrar-sesion', cerrarSesion);
 
 router.get('/register', formRegister);
 router.post('/register', register);

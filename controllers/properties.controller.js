@@ -1,7 +1,8 @@
 import { Categorie, Price, Propertie, Message } from '../models/index.model.js'
 import { validationResult } from 'express-validator';
 import { unlink } from "node:fs/promises";
-import { isVendedor } from "../helpers/index.js";
+import { isVendedor, formatearFecha } from "../helpers/index.js";
+import Usuario from '../models/User.model.js';
 
 
 const admin = async (req, res) => {
@@ -310,6 +311,32 @@ const deletePropertie = async (req, res) => {
     res.redirect('/my-properties');
 }
 
+/** Modifica el estado de la propiedad */
+const cambiarEstado = async (req, res) => {
+    const { id } = req.params;
+
+    // Validar que la propiedad exista
+    const propertie = await Propertie.findByPk(id);
+
+    if (!propertie) {
+        return res.redirect('/my-properties');
+    }
+
+    // Revisar que quien visita la URL es quien publico la propiedad
+    if (propertie.usuarioId.toString() !== req.user.id.toString()) {
+        return res.redirect('/my-properties');
+    }
+
+    // Actualizar estado de la propiedad
+    propertie.publicado = !propertie.publicado;
+
+    await propertie.save();
+
+    res.json({
+        resultado: 'ok'
+    });
+}
+
 /** Visualización de propiedad */
 const viewPropertie = async (req, res) => {
 
@@ -323,7 +350,7 @@ const viewPropertie = async (req, res) => {
         ]
     });
 
-    if (!propertie) {
+    if (!propertie || !propertie.publicado) {
         return res.redirect('/404');
     }
 
@@ -389,11 +416,35 @@ const enviarMensaje = async (req, res) => {
 /** Leer mensajes recibidos */
 const verMensajes = async (req, res) => {
 
+    const { id } = req.params;
+
+    // Validar que la propiedad exista
+    const propertie = await Propertie.findByPk(id, {
+        include: [
+            { model: Message, as: 'messages', include: [{ model: Usuario.scope('deletePassword'), as: 'usuario' }] }
+        ]
+    });
+
+    if (!propertie) {
+        return res.redirect('/my-properties');
+    }
+
+    // Revisar que quien visita la URL es quien publico la propiedad
+    if (propertie.usuarioId.toString() !== req.user.id.toString()) {
+        return res.redirect('/my-properties');
+    }
+
+    res.render('properties/mensajes', {
+        page: 'Mensajes',
+        message: propertie.messages,
+        formatearFecha
+    });
 }
 
 export {
     addImage,
     admin,
+    cambiarEstado,
     crear,
     deletePropertie,
     editar,
